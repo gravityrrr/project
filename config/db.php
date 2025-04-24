@@ -7,8 +7,8 @@ error_reporting(E_ALL);
 // Database configuration
 $host = '127.0.0.1';          // use IP to avoid DNS issues
 $db   = 'gym_management';
-$user = 'root';
-$pass = '';        // if no password, just use ''
+$user = 'admin';
+$pass = 'Sand_disk';        // if no password, just use ''
 $charset = 'utf8mb4';
 
 // Data Source Name

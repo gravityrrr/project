@@ -11,8 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("SELECT * FROM admins WHERE username = ?");
     $stmt->execute([$username]);
     $admin = $stmt->fetch();
+   // print($password . "\n");
+   // print($admin['password_hash']. "\n");
+      
+    $pass_check = password_verify($password, $admin['password_hash']);
+   // echo("\n" . $pass_check. "\n");
 
-    if ($admin && password_verify($password, $admin['password_hash'])) {
+    if ($admin && $pass_check) {
         $_SESSION['admin_id'] = $admin['id'];
         header('Location: dashboard.php');
         exit;
