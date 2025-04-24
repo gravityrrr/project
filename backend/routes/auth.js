@@ -14,44 +14,36 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Check if admin exists
-    const [admins] = await pool.query('SELECT * FROM admins WHERE username = ?', [username]);
-    
+    // 1. Check if admin exists
+    const [admins] = await pool.query(
+      "SELECT * FROM admins WHERE username = ?", 
+      [username]
+    );
+
     if (admins.length === 0) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const admin = admins[0];
 
-    // Check password
-    const isMatch = await bcrypt.compare(password, admin.password_hash);
-    
+    // 2. Verify password
+    const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Create JWT payload
-    const payload = {
-      id: admin.id,
-      username: admin.username
-    };
-
-    // Sign token
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          success: true,
-          token: token
-        });
-      }
+    // 3. Generate JWT token
+    const token = jwt.sign(
+      { id: admin.id }, 
+      process.env.JWT_SECRET || 'your_fallback_secret', 
+      { expiresIn: '1h' }
     );
+
+    res.json({ token });
+
   } catch (error) {
-    console.error('Login error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

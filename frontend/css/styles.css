@@ -1,7 +1,7 @@
 /* Base Styles */
 :root {
-  --color-primary: #4f46e5;
-  --color-primary-light: #6366f1;
+  --color-primary: #000000;
+  --color-primary-light: #080b9d;
   --color-primary-dark: #1e1b4b;
   
   --color-success: #10b981;
@@ -629,13 +629,16 @@ label {
 .login-form-container h2 {
   text-align: center;
   margin-bottom: var(--spacing-6);
-  color: var(--color-gray-300);
+  color: var(--color-white-300);
 }
 
 .login-error {
   color: var(--color-danger);
   margin-bottom: var(--spacing-4);
   font-size: 0.875rem;
+}
+.input-color {
+  background-color: #cbd5e1;
 }
 
 #loginForm .btn-primary {
