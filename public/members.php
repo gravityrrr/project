@@ -72,7 +72,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
 
             <a href="members.php"
                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors <?= basename($_SERVER['PHP_SELF']) === 'members.php' ? 'bg-gray-700 text-white' : 'text-gray-400' ?>">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 24"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 22"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M15 11a3 3 0 10-6 0 3 3 0 006 0z"/>
@@ -145,10 +145,10 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
     <div class="flex-1 flex flex-col">
 
         <header class="bg-gray-800 px-6 py-4 flex items-center justify-between">
-            <h1 class="text-2xl font-semibold">Members</h1>
+            <h1 class="text-2xl font-semibold text-white">Members</h1>
             <div class="flex items-center gap-4">
                 <input type="search" placeholder="Search..."
-                       class="px-4 py-1 bg-gray-700 text-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                       class="px-4 py-1 bg-gray-700 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                 <button class="relative">
                     <svg class="h-6 w-6 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor"
                          viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
         <div class="p-6 overflow-y-auto">
 
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-semibold">Members</h1>
+                <h1 class="text-2xl font-semibold text-white">Members</h1>
                 <button onclick="openModal('createModal')"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
                     + Add Member
@@ -221,21 +221,21 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
 
 <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4">Add New Member</h2>
+        <h2 class="text-xl font-semibold mb-4 text-white">Add New Member</h2>
         <form method="POST" class="space-y-4">
             <input type="hidden" name="action" value="create">
             <div>
-                <label class="block mb-1">Name</label>
-                <input name="name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Name</label>
+                <input name="name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div class="flex gap-4">
                 <div class="flex-1">
-                    <label class="block mb-1">Age</label>
-                    <input name="age" type="number" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <label class="block mb-1 text-white">Age</label>
+                    <input name="age" type="number" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                 </div>
                 <div class="flex-1">
-                    <label class="block mb-1">Gender</label>
-                    <select name="gender" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <label class="block mb-1 text-white">Gender</label>
+                    <select name="gender" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>
@@ -243,22 +243,22 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
                 </div>
             </div>
             <div>
-                <label class="block mb-1">Address</label>
-                <textarea name="address" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200"></textarea>
+                <label class="block mb-1 text-white">Address</label>
+                <textarea name="address" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
             </div>
             <div class="flex gap-4">
                 <div class="flex-1">
-                    <label class="block mb-1">Phone</label>
-                    <input name="phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <label class="block mb-1 text-white">Phone</label>
+                    <input name="phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                 </div>
                 <div class="flex-1">
-                    <label class="block mb-1">Email</label>
-                    <input name="email" type="email" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <label class="block mb-1 text-white">Email</label>
+                    <input name="email" type="email" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                 </div>
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('createModal')"
-                        class="px-4 py-2 bg-gray-600 rounded-lg text-gray-200">Cancel</button>
+                        class="px-4 py-2 bg-gray-600 rounded-lg text-white">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white">Save</button>
             </div>
         </form>
@@ -267,23 +267,23 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
 
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4">Edit Member</h2>
+        <h2 class="text-xl font-semibold mb-4 text-white">Edit Member</h2>
         <form method="POST" id="editForm" class="space-y-4">
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="id" id="edit_id">
             <div>
-                <label class="block mb-1">Name</label>
-                <input name="name" id="edit_name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Name</label>
+                <input name="name" id="edit_name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div class="flex gap-4">
                 <div class="flex-1">
-                    <label class="block mb-1">Age</label>
+                    <label class="block mb-1 text-white">Age</label>
                     <input name="age" id="edit_age" type="number"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                 </div>
                 <div class="flex-1">
-                    <label class="block mb-1">Gender</label>
-                    <select name="gender" id="edit_gender" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <label class="block mb-1 text-white">Gender</label>
+                    <select name="gender" id="edit_gender" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>
@@ -291,24 +291,24 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
                 </div>
             </div>
             <div>
-                <label class="block mb-1">Address</label>
+                <label class="block mb-1 text-white">Address</label>
                 <textarea name="address" id="edit_address"
-                          class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200"></textarea>
+                          class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
             </div>
             <div class="flex gap-4">
                 <div class="flex-1">
-                    <label class="block mb-1">Phone</label>
-                    <input name="phone" id="edit_phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <label class="block mb-1 text-white">Phone</label>
+                    <input name="phone" id="edit_phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                 </div>
                 <div class="flex-1">
-                    <label class="block mb-1">Email</label>
+                    <label class="block mb-1 text-white">Email</label>
                     <input name="email" id="edit_email" type="email"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                 </div>
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('editModal')"
-                        class="px-4 py-2 bg-gray-600 rounded-lg text-gray-200">Cancel</button>
+                        class="px-4 py-2 bg-gray-600 rounded-lg text-white">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white">Update</button>
             </div>
         </form>

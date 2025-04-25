@@ -8,43 +8,84 @@ require __DIR__ . '/../config/db.php';
 
 // Handle Create
 if (isset($_POST['action']) && $_POST['action'] === 'create') {
-    $stmt = $pdo->prepare("INSERT INTO trainers (name, age, address, experience_years, specialty, phone, email) VALUES (?,?,?,?,?,?,?)");
-    $stmt->execute([
-        $_POST['name'], $_POST['age'], $_POST['address'],
-        $_POST['experience_years'], $_POST['specialty'], $_POST['phone'], $_POST['email']
-    ]);
-    header('Location: trainers.php');
-    exit;
+    try {
+        $stmt = $pdo->prepare("INSERT INTO attendance (user_id, role, date, time_in, time_out) VALUES (?,?,?,?,?)");
+        $stmt->execute([
+            $_POST['user_id'], $_POST['role'], $_POST['date'],
+            $_POST['time_in'], $_POST['time_out']
+        ]);
+        header('Location: attendance.php');
+        exit;
+    } catch (PDOException $e) {
+        // Log the error (optional)
+        error_log("Error creating attendance record: " . $e->getMessage());
+        // Display a user-friendly error message
+        echo "<script>alert('Failed to add attendance record. Please check the data and try again.'); window.location.href='attendance.php';</script>";
+        exit; // Stop execution to prevent further errors
+    }
 }
 
 // Handle Update
 if (isset($_POST['action']) && $_POST['action'] === 'update') {
-    $stmt = $pdo->prepare("UPDATE trainers SET name=?, age=?, address=?, experience_years=?, specialty=?, phone=?, email=? WHERE id=?");
-    $stmt->execute([
-        $_POST['name'], $_POST['age'], $_POST['address'],
-        $_POST['experience_years'], $_POST['specialty'], $_POST['phone'], $_POST['email'],
-        $_POST['id']
-    ]);
-    header('Location: trainers.php');
-    exit;
+    try {
+        $stmt = $pdo->prepare("UPDATE attendance SET user_id=?, role=?, date=?, time_in=?, time_out=? WHERE id=?");
+        $stmt->execute([
+            $_POST['user_id'], $_POST['role'], $_POST['date'],
+            $_POST['time_in'], $_POST['time_out'], $_POST['id']
+        ]);
+        header('Location: attendance.php');
+        exit;
+    } catch (PDOException $e) {
+        error_log("Error updating attendance record: " . $e->getMessage());
+        echo "<script>alert('Failed to update attendance record. Please check the data and try again.'); window.location.href='attendance.php';</script>";
+        exit;
+    }
 }
 
 // Handle Delete
 if (isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $stmt = $pdo->prepare("DELETE FROM trainers WHERE id=?");
-    $stmt->execute([$_POST['id']]);
-    header('Location: trainers.php');
+    try {
+        $stmt = $pdo->prepare("DELETE FROM attendance WHERE id=?");
+        $stmt->execute([$_POST['id']]);
+        header('Location: attendance.php');
+        exit;
+    } catch (PDOException $e) {
+        error_log("Error deleting attendance record: " . $e->getMessage());
+        echo "<script>alert('Failed to delete attendance record. Please try again.'); window.location.href='attendance.php';</script>";
+        exit;
+    }
+}
+
+// Fetch all attendance records, joining with users table to get names
+try {
+    $attendance = $pdo->query("
+        SELECT a.*, m.name as member_name, t.name as trainer_name
+        FROM attendance a
+        LEFT JOIN members m ON a.user_id = m.id AND a.role = 'member'
+        LEFT JOIN trainers t ON a.user_id = t.id AND a.role = 'trainer'
+        ORDER BY a.date DESC, a.time_in DESC
+    ")->fetchAll();
+} catch (PDOException $e) {
+    error_log("Error fetching attendance records: " . $e->getMessage());
+    echo "<script>alert('Failed to retrieve attendance data. Please check the database connection.'); window.location.href='dashboard.php';</script>"; //redirect to dashboard
     exit;
 }
 
-// Fetch all trainers
-$trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetchAll();
+// Fetch members and trainers for the dropdowns in the forms
+try {
+    $members = $pdo->query("SELECT id, name FROM members")->fetchAll();
+    $trainers = $pdo->query("SELECT id, name FROM trainers")->fetchAll();
+} catch (PDOException $e) {
+    error_log("Error fetching members or trainers: " . $e->getMessage());
+    echo "<script>alert('Failed to retrieve member or trainer data. Some features may not work correctly.'); window.location.href='dashboard.php';</script>"; //redirect to dashboard
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Trainers – FitFusion</title>
+    <title>Attendance – FitFusion</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -105,7 +146,7 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Attendance
             </a>
@@ -145,10 +186,10 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
     <div class="flex-1 flex flex-col">
 
         <header class="bg-gray-800 px-6 py-4 flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-white">Trainers</h1>
+            <h1 class="text-2xl font-semibold">Attendance</h1>
             <div class="flex items-center gap-4">
                 <input type="search" placeholder="Search..."
-                       class="px-4 py-1 bg-gray-700 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                       class="px-4 py-1 bg-gray-700 text-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                 <button class="relative">
                     <svg class="h-6 w-6 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor"
                          viewBox="0 0 24 24">
@@ -163,10 +204,10 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
         <div class="p-6 overflow-y-auto">
 
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-semibold text-white">Trainers</h1>
+                <h1 class="text-2xl font-semibold">Attendance</h1>
                 <button onclick="openModal('createModal')"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-                    + Add Trainer
+                    + Add Attendance
                 </button>
             </div>
 
@@ -174,43 +215,41 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
                 <table class="min-w-full text-left text-gray-300">
                     <thead class="border-b border-gray-700 text-gray-400">
                     <tr>
-                        <th class="py-2 px-4">Name</th>
-                        <th class="py-2 px-4">Age</th>
-                        <th class="py-2 px-4">Specialty</th>
-                        <th class="py-2 px-4">Experience</th>
-                        <th class="py-2 px-4">Phone</th>
-                        <th class="py-2 px-4">Email</th>
-                        <th class="py-2 px-4">Joined</th>
+                        <th class="py-2 px-4">User</th>
+                        <th class="py-2 px-4">Role</th>
+                        <th class="py-2 px-4">Date</th>
+                        <th class="py-2 px-4">Time In</th>
+                        <th class="py-2 px-4">Time Out</th>
+                        <th class="py-2 px-4">Created At</th>
                         <th class="py-2 px-4">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($trainers as $trainer): ?>
+                    <?php foreach ($attendance as $record): ?>
                         <tr class="border-b border-gray-700 hover:bg-gray-700">
-                            <td class="py-2 px-4"><?= htmlspecialchars($trainer['name']) ?></td>
-                            <td class="py-2 px-4"><?= $trainer['age'] ?></td>
-                            <td class="py-2 px-4"><?= htmlspecialchars($trainer['specialty']) ?></td>
-                            <td class="py-2 px-4"><?= $trainer['experience_years'] ?> years</td>
-                            <td class="py-2 px-4"><?= htmlspecialchars($trainer['phone']) ?></td>
-                            <td class="py-2 px-4"><?= htmlspecialchars($trainer['email']) ?></td>
-                            <td class="py-2 px-4"><?= date('M j, Y', strtotime($trainer['created_at'])) ?></td>
+                            <td class="py-2 px-4"><?= htmlspecialchars($record['member_name'] ?? $record['trainer_name']) ?></td>
+                            <td class="py-2 px-4"><?= ucfirst($record['role']) ?></td>
+                            <td class="py-2 px-4"><?= $record['date'] ?></td>
+                            <td class="py-2 px-4"><?= $record['time_in'] ?></td>
+                            <td class="py-2 px-4"><?= $record['time_out'] ?? '—' ?></td>
+                            <td class="py-2 px-4"><?= date('M j, Y H:i:s', strtotime($record['created_at'])) ?></td>
                             <td class="py-2 px-4 flex gap-2">
-                                <button onclick="openEdit(<?= $trainer['id'] ?>,'<?= addslashes($trainer['name']) ?>',<?= $trainer['age'] ?>,'<?= addslashes($trainer['address']) ?>',<?= $trainer['experience_years'] ?>,'<?= addslashes($trainer['specialty']) ?>','<?= addslashes($trainer['phone']) ?>','<?= addslashes($trainer['email']) ?>')"
+                                <button onclick="openEdit(<?= $record['id'] ?>, <?= $record['user_id'] ?>, '<?= $record['role'] ?>', '<?= $record['date'] ?>', '<?= $record['time_in'] ?>', '<?= $record['time_out'] ?>')"
                                         class="text-blue-400 hover:text-blue-200">
                                     Edit
                                 </button>
                                 <form method="POST" class="inline"
-                                      onsubmit="return confirm('Delete this trainer?')">
-                                    <input type="hidden" name="id" value="<?= $trainer['id'] ?>">
+                                      onsubmit="return confirm('Delete this record?')">
+                                    <input type="hidden" name="id" value="<?= $record['id'] ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <button type="submit" class="text-red-500 hover:text-red-300">Delete</button>
                                 </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                    <?php if (empty($trainers)): ?>
+                    <?php if (empty($attendance)): ?>
                         <tr>
-                            <td colspan="8" class="py-4 text-center text-gray-500">No trainers found.</td>
+                            <td colspan="7" class="py-4 text-center text-gray-500">No attendance records found.</td>
                         </tr>
                     <?php endif; ?>
                     </tbody>
@@ -223,44 +262,50 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
 
 <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4 text-white">Add New Trainer</h2>
+        <h2 class="text-xl font-semibold mb-4">Add Attendance Record</h2>
         <form method="POST" class="space-y-4">
             <input type="hidden" name="action" value="create">
             <div>
-                <label class="block mb-1 text-white">Name</label>
-                <input name="name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-            </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Age</label>
-                    <input name="age" type="number" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Specialty</label>
-                    <input name="specialty" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
+                <label class="block mb-1">User ID</label>
+                <select name="user_id" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <optgroup label="Members">
+                        <?php foreach ($members as $member): ?>
+                            <option value="<?= $member['id'] ?>">
+                                <?= htmlspecialchars($member['name']) ?> (Member)
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                    <optgroup label="Trainers">
+                        <?php foreach ($trainers as $trainer): ?>
+                            <option value="<?= $trainer['id'] ?>">
+                                <?= htmlspecialchars($trainer['name']) ?> (Trainer)
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                </select>
             </div>
             <div>
-                <label class="block mb-1 text-white">Address</label>
-                <textarea name="address" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
+                <label class="block mb-1">Role</label>
+                <select name="role" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <option value="member">Member</option>
+                    <option value="trainer">Trainer</option>
+                </select>
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Phone</label>
-                    <input name="phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Email</label>
-                    <input name="email" type="email" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
+            <div>
+                <label class="block mb-1">Date</label>
+                <input name="date" type="date" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
             </div>
-             <div>
-                <label class="block mb-1 text-white">Experience (Years)</label>
-                <input name="experience_years" type="number" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
+            <div>
+                <label class="block mb-1">Time In</label>
+                <input name="time_in" type="time" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+            </div>
+            <div>
+                <label class="block mb-1">Time Out</label>
+                <input name="time_out" type="time" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('createModal')"
-                        class="px-4 py-2 bg-gray-600 rounded-lg text-white">Cancel</button>
+                        class="px-4 py-2 bg-gray-600 rounded-lg text-gray-200">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white">Save</button>
             </div>
         </form>
@@ -269,50 +314,54 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
 
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4 text-white">Edit Trainer</h2>
+        <h2 class="text-xl font-semibold mb-4">Edit Attendance Record</h2>
         <form method="POST" id="editForm" class="space-y-4">
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="id" id="edit_id">
             <div>
-                <label class="block mb-1 text-white">Name</label>
-                <input name="name" id="edit_name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-            </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Age</label>
-                    <input name="age" id="edit_age" type="number"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                 <div class="flex-1">
-                    <label class="block mb-1 text-white">Specialty</label>
-                    <input name="specialty" id="edit_specialty"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-            </div>
-            <div>
-                <label class="block mb-1 text-white">Address</label>
-                <textarea name="address" id="edit_address"
-                          class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
-            </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Phone</label>
-                    <input name="phone" id="edit_phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Email</label>
-                    <input name="email" id="edit_email" type="email"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
+                <label class="block mb-1">User ID</label>
+                <select name="user_id" id="edit_user_id" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <optgroup label="Members">
+                        <?php foreach ($members as $member): ?>
+                            <option value="<?= $member['id'] ?>">
+                                <?= htmlspecialchars($member['name']) ?> (Member)
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                    <optgroup label="Trainers">
+                        <?php foreach ($trainers as $trainer): ?>
+                            <option value="<?= $trainer['id'] ?>">
+                                <?= htmlspecialchars($trainer['name']) ?> (Trainer)
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                </select>
             </div>
             <div>
-                <label class="block mb-1 text-white">Experience (Years)</label>
-                <input name="experience_years" id="edit_experience_years" type="number"
-                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
+                <label class="block mb-1">Role</label>
+                <select name="role" id="edit_role" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                    <option value="member">Member</option>
+                    <option value="trainer">Trainer</option>
+                </select>
+            </div>
+            <div>
+                <label class="block mb-1">Date</label>
+                <input name="date" id="edit_date" type="date" required
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+            </div>
+            <div>
+                <label class="block mb-1">Time In</label>
+                <input name="time_in" id="edit_time_in" type="time" required
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+            </div>
+            <div>
+                <label class="block mb-1">Time Out</label>
+                <input name="time_out" id="edit_time_out" type="time"
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('editModal')"
-                        class="px-4 py-2 bg-gray-600 rounded-lg text-white">Cancel</button>
+                        class="px-4 py-2 bg-gray-600 rounded-lg text-gray-200">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white">Update</button>
             </div>
         </form>
@@ -329,15 +378,31 @@ function closeModal(id) {
 }
 
 // Pre-fill edit form
-function openEdit(id, name, age, address, experience_years, specialty, phone, email) {
+function openEdit(id, user_id, role, date, time_in, time_out) {
     document.getElementById('edit_id').value = id;
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_age').value = age;
-    document.getElementById('edit_address').value = address;
-    document.getElementById('edit_experience_years').value = experience_years;
-    document.getElementById('edit_specialty').value = specialty;
-    document.getElementById('edit_phone').value = phone;
-    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_user_id').value = user_id;
+    document.getElementById('edit_role').value = role;
+    document.getElementById('edit_date').value = date;
+    document.getElementById('edit_time_in').value = time_in;
+    document.getElementById('edit_time_out').value = time_out;
+
+    // Set the selected value for the user_id dropdown
+    const userSelect = document.getElementById('edit_user_id');
+    for (let i = 0; i < userSelect.options.length; i++) {
+        if (parseInt(userSelect.options[i].value) === user_id) {
+            userSelect.selectedIndex = i;
+            break;
+        }
+    }
+    // Set the selected value for the role dropdown
+    const roleSelect = document.getElementById('edit_role');
+    for (let i = 0; i < roleSelect.options.length; i++) {
+        if (roleSelect.options[i].value === role) {
+            roleSelect.selectedIndex = i;
+            break;
+        }
+    }
+
     openModal('editModal');
 }
 </script>
