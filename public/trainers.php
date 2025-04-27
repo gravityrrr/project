@@ -147,8 +147,7 @@ $trainers = $pdo->query("SELECT * FROM trainers ORDER BY created_at DESC")->fetc
         <header class="bg-gray-800 px-6 py-4 flex items-center justify-between">
             <h1 class="text-2xl font-semibold text-white">Trainers</h1>
             <div class="flex items-center gap-4">
-                <input type="search" placeholder="Search..."
-                       class="px-4 py-1 bg-gray-700 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                
                 <button class="relative">
                     <svg class="h-6 w-6 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor"
                          viewBox="0 0 24 24">

@@ -8,43 +8,66 @@ require __DIR__ . '/../config/db.php';
 
 // Handle Create
 if (isset($_POST['action']) && $_POST['action'] === 'create') {
-    $stmt = $pdo->prepare("INSERT INTO members (name, age, gender, address, phone, email) VALUES (?,?,?,?,?,?)");
-    $stmt->execute([
-        $_POST['name'], $_POST['age'], $_POST['gender'],
-        $_POST['address'], $_POST['phone'], $_POST['email']
-    ]);
-    header('Location: members.php');
-    exit;
+    try {
+        $stmt = $pdo->prepare("INSERT INTO equipment (name, purchase_date, last_service_date, next_service_date, status, notes) VALUES (?,?,?,?,?,?)");
+        $stmt->execute([
+            $_POST['name'], $_POST['purchase_date'], $_POST['last_service_date'],
+            $_POST['next_service_date'], $_POST['status'], $_POST['notes']
+        ]);
+        header('Location: equipment.php');
+        exit;
+    } catch (PDOException $e) {
+        error_log("Error creating equipment record: " . $e->getMessage());
+        echo "<script>alert('Failed to add equipment record. Please check the data and try again.'); window.location.href='equipment.php';</script>";
+        exit;
+    }
 }
 
 // Handle Update
 if (isset($_POST['action']) && $_POST['action'] === 'update') {
-    $stmt = $pdo->prepare("UPDATE members SET name=?, age=?, gender=?, address=?, phone=?, email=? WHERE id=?");
-    $stmt->execute([
-        $_POST['name'], $_POST['age'], $_POST['gender'],
-        $_POST['address'], $_POST['phone'], $_POST['email'],
-        $_POST['id']
-    ]);
-    header('Location: members.php');
-    exit;
+    try {
+        $stmt = $pdo->prepare("UPDATE equipment SET name=?, purchase_date=?, last_service_date=?, next_service_date=?, status=?, notes=? WHERE id=?");
+        $stmt->execute([
+            $_POST['name'], $_POST['purchase_date'], $_POST['last_service_date'],
+            $_POST['next_service_date'], $_POST['status'], $_POST['notes'], $_POST['id']
+        ]);
+        header('Location: equipment.php');
+        exit;
+    } catch (PDOException $e) {
+        error_log("Error updating equipment record: " . $e->getMessage());
+        echo "<script>alert('Failed to update equipment record. Please check the data and try again.'); window.location.href='equipment.php';</script>";
+        exit;
+    }
 }
 
 // Handle Delete
 if (isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $stmt = $pdo->prepare("DELETE FROM members WHERE id=?");
-    $stmt->execute([$_POST['id']]);
-    header('Location: members.php');
-    exit;
+    try {
+        $stmt = $pdo->prepare("DELETE FROM equipment WHERE id=?");
+        $stmt->execute([$_POST['id']]);
+        header('Location: equipment.php');
+        exit;
+    } catch (PDOException $e) {
+        error_log("Error deleting equipment record: " . $e->getMessage());
+        echo "<script>alert('Failed to delete equipment record. Please try again.'); window.location.href='equipment.php';</script>";
+        exit;
+    }
 }
 
-// Fetch all members
-$members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchAll();
+// Fetch all equipment records
+try {
+    $equipment = $pdo->query("SELECT * FROM equipment ORDER BY purchase_date DESC")->fetchAll();
+} catch (PDOException $e) {
+    error_log("Error fetching equipment records: " . $e->getMessage());
+    echo "<script>alert('Failed to retrieve equipment data. Please check the database connection.'); window.location.href='dashboard.php';</script>";
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Members – FitFusion</title>
+    <title>Equipment – FitFusion</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../assets/css/styles.css">
@@ -72,7 +95,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
 
             <a href="members.php"
                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors <?= basename($_SERVER['PHP_SELF']) === 'members.php' ? 'bg-gray-700 text-white' : 'text-gray-400' ?>">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 22"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M5.121 17.804A9 9 0 0112 15a9 9 0 016.879 2.804M15 11a3 3 0 10-6 0 3 3 0 006 0z"/>
@@ -105,14 +128,14 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Attendance
             </a>
 
             <a href="equipment.php"
                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors <?= basename($_SERVER['PHP_SELF']) === 'equipment.php' ? 'bg-gray-700 text-white' : 'text-gray-400' ?>">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 24"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 4"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M14.7 4.3a1 1 0 011.4 1.4l-2 2a1 1 0 01-.7.3h-2a6 6 0 100 12h.5a1 1 0 011 1v2a1 1 0 01-.3.7l-2 2a1 1 0 01-1.4-1.4l2-2a1 1 0 01.7-.3H12a4 4 0 110-8h-.5a1 1 0 01-1-1V7a1 1 0 01.3-.7l2-2z"/>
@@ -145,7 +168,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
     <div class="flex-1 flex flex-col">
 
         <header class="bg-gray-800 px-6 py-4 flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-white">Members</h1>
+            <h1 class="text-2xl font-semibold text-white">Equipment</h1>
             <div class="flex items-center gap-4">
                 
                 <button class="relative">
@@ -162,10 +185,10 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
         <div class="p-6 overflow-y-auto">
 
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-semibold text-white">Members</h1>
+                <h1 class="text-2xl font-semibold text-white">Equipment</h1>
                 <button onclick="openModal('createModal')"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-                    + Add Member
+                    + Add Equipment
                 </button>
             </div>
 
@@ -174,40 +197,42 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
                     <thead class="border-b border-gray-700 text-gray-400">
                     <tr>
                         <th class="py-2 px-4">Name</th>
-                        <th class="py-2 px-4">Age</th>
-                        <th class="py-2 px-4">Gender</th>
-                        <th class="py-2 px-4">Phone</th>
-                        <th class="py-2 px-4">Email</th>
-                        <th class="py-2 px-4">Joined</th>
+                        <th class="py-2 px-4">Purchase Date</th>
+                        <th class="py-2 px-4">Last Service Date</th>
+                        <th class="py-2 px-4">Next Service Date</th>
+                        <th class="py-2 px-4">Status</th>
+                        <th class="py-2 px-4">Notes</th>
+                        <th class="py-2 px-4">Created At</th>
                         <th class="py-2 px-4">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($members as $m): ?>
+                    <?php foreach ($equipment as $record): ?>
                         <tr class="border-b border-gray-700 hover:bg-gray-700">
-                            <td class="py-2 px-4"><?= htmlspecialchars($m['name']) ?></td>
-                            <td class="py-2 px-4"><?= $m['age'] ?></td>
-                            <td class="py-2 px-4"><?= ucfirst($m['gender']) ?></td>
-                            <td class="py-2 px-4"><?= htmlspecialchars($m['phone']) ?></td>
-                            <td class="py-2 px-4"><?= htmlspecialchars($m['email']) ?></td>
-                            <td class="py-2 px-4"><?= date('M j, Y', strtotime($m['created_at'])) ?></td>
+                            <td class="py-2 px-4"><?= htmlspecialchars($record['name']) ?></td>
+                            <td class="py-2 px-4"><?= $record['purchase_date'] ?></td>
+                            <td class="py-2 px-4"><?= $record['last_service_date'] ?></td>
+                            <td class="py-2 px-4"><?= $record['next_service_date'] ?></td>
+                            <td class="py-2 px-4"><?= htmlspecialchars($record['status']) ?></td>
+                            <td class="py-2 px-4"><?= htmlspecialchars($record['notes']) ?></td>
+                            <td class="py-2 px-4"><?= date('M j, Y H:i:s', strtotime($record['created_at'])) ?></td>
                             <td class="py-2 px-4 flex gap-2">
-                                <button onclick="openEdit(<?= $m['id'] ?>,'<?= addslashes($m['name']) ?>',<?= $m['age'] ?>,'<?= $m['gender'] ?>','<?= addslashes($m['address']) ?>','<?= $m['phone'] ?>','<?= $m['email'] ?>')"
+                                <button onclick="openEdit(<?= $record['id'] ?>, '<?= htmlspecialchars(addslashes($record['name'])) ?>', '<?= $record['purchase_date'] ?>', '<?= $record['last_service_date'] ?>', '<?= $record['next_service_date'] ?>', '<?= htmlspecialchars(addslashes($record['status'])) ?>', '<?= htmlspecialchars(addslashes($record['notes'])) ?>')"
                                         class="text-blue-400 hover:text-blue-200">
                                     Edit
                                 </button>
                                 <form method="POST" class="inline"
-                                      onsubmit="return confirm('Delete this member?')">
-                                    <input type="hidden" name="id" value="<?= $m['id'] ?>">
+                                      onsubmit="return confirm('Delete this record?')">
+                                    <input type="hidden" name="id" value="<?= $record['id'] ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <button type="submit" class="text-red-500 hover:text-red-300">Delete</button>
                                 </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                    <?php if (empty($members)): ?>
+                    <?php if (empty($equipment)): ?>
                         <tr>
-                            <td colspan="7" class="py-4 text-center text-gray-500">No members found.</td>
+                            <td colspan="8" class="py-4 text-center text-gray-500">No equipment records found.</td>
                         </tr>
                     <?php endif; ?>
                     </tbody>
@@ -220,40 +245,32 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
 
 <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4 text-white">Add New Member</h2>
+        <h2 class="text-xl font-semibold mb-4 text-white">Add Equipment Record</h2>
         <form method="POST" class="space-y-4">
             <input type="hidden" name="action" value="create">
             <div>
                 <label class="block mb-1 text-white">Name</label>
                 <input name="name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Age</label>
-                    <input name="age" type="number" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Gender</label>
-                    <select name="gender" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block mb-1 text-white">Purchase Date</label>
+                <input name="purchase_date" type="date" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div>
-                <label class="block mb-1 text-white">Address</label>
-                <textarea name="address" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
+                <label class="block mb-1 text-white">Last Service Date</label>
+                <input name="last_service_date" type="date" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Phone</label>
-                    <input name="phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Email</label>
-                    <input name="email" type="email" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
+            <div>
+                <label class="block mb-1 text-white">Next Service Date</label>
+                <input name="next_service_date" type="date" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
+            </div>
+            <div>
+                <label class="block mb-1 text-white">Status</label>
+                <input name="status" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
+            </div>
+            <div>
+                <label class="block mb-1 text-white">Notes</label>
+                <textarea name="notes" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('createModal')"
@@ -266,7 +283,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
 
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4 text-white">Edit Member</h2>
+        <h2 class="text-xl font-semibold mb-4 text-white">Edit Equipment Record</h2>
         <form method="POST" id="editForm" class="space-y-4">
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="id" id="edit_id">
@@ -274,36 +291,28 @@ $members = $pdo->query("SELECT * FROM members ORDER BY created_at DESC")->fetchA
                 <label class="block mb-1 text-white">Name</label>
                 <input name="name" id="edit_name" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Age</label>
-                    <input name="age" id="edit_age" type="number"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Gender</label>
-                    <select name="gender" id="edit_gender" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block mb-1 text-white">Purchase Date</label>
+                <input name="purchase_date" id="edit_purchase_date" type="date" required
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div>
-                <label class="block mb-1 text-white">Address</label>
-                <textarea name="address" id="edit_address"
-                          class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
+                <label class="block mb-1 text-white">Last Service Date</label>
+                <input name="last_service_date" id="edit_last_service_date" type="date"
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Phone</label>
-                    <input name="phone" id="edit_phone" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
-                <div class="flex-1">
-                    <label class="block mb-1 text-white">Email</label>
-                    <input name="email" id="edit_email" type="email"
-                           class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
-                </div>
+            <div>
+                <label class="block mb-1 text-white">Next Service Date</label>
+                <input name="next_service_date" id="edit_next_service_date" type="date"
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
+            </div>
+            <div>
+                <label class="block mb-1 text-white">Status</label>
+                <input name="status" id="edit_status" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
+            </div>
+            <div>
+                <label class="block mb-1 text-white">Notes</label>
+                <textarea name="notes" id="edit_notes" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white"></textarea>
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('editModal')"
@@ -324,14 +333,14 @@ function closeModal(id) {
 }
 
 // Pre-fill edit form
-function openEdit(id, name, age, gender, address, phone, email) {
+function openEdit(id, name, purchase_date, last_service_date, next_service_date, status, notes) {
     document.getElementById('edit_id').value = id;
     document.getElementById('edit_name').value = name;
-    document.getElementById('edit_age').value = age;
-    document.getElementById('edit_gender').value = gender;
-    document.getElementById('edit_address').value = address;
-    document.getElementById('edit_phone').value = phone;
-    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_purchase_date').value = purchase_date;
+    document.getElementById('edit_last_service_date').value = last_service_date;
+    document.getElementById('edit_next_service_date').value = next_service_date;
+    document.getElementById('edit_status').value = status;
+    document.getElementById('edit_notes').value = notes;
     openModal('editModal');
 }
 </script>

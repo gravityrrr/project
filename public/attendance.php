@@ -67,7 +67,7 @@ try {
     ")->fetchAll();
 } catch (PDOException $e) {
     error_log("Error fetching attendance records: " . $e->getMessage());
-    echo "<script>alert('Failed to retrieve attendance data. Please check the database connection.'); window.location.href='dashboard.php';</script>"; //redirect to dashboard
+    echo "<script>alert('Failed to retrieve attendance data. Please check the database connection.'); window.location.href='dashboard.php';</script>";
     exit;
 }
 
@@ -77,7 +77,7 @@ try {
     $trainers = $pdo->query("SELECT id, name FROM trainers")->fetchAll();
 } catch (PDOException $e) {
     error_log("Error fetching members or trainers: " . $e->getMessage());
-    echo "<script>alert('Failed to retrieve member or trainer data. Some features may not work correctly.'); window.location.href='dashboard.php';</script>"; //redirect to dashboard
+    echo "<script>alert('Failed to retrieve member or trainer data. Some features may not work correctly.'); window.location.href='dashboard.php';</script>";
     exit;
 }
 ?>
@@ -146,7 +146,7 @@ try {
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sidebar-icon" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v12a2 2 0 002 2z"/>
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Attendance
             </a>
@@ -186,10 +186,9 @@ try {
     <div class="flex-1 flex flex-col">
 
         <header class="bg-gray-800 px-6 py-4 flex items-center justify-between">
-            <h1 class="text-2xl font-semibold">Attendance</h1>
+            <h1 class="text-2xl font-semibold text-white">Attendance</h1>
             <div class="flex items-center gap-4">
-                <input type="search" placeholder="Search..."
-                       class="px-4 py-1 bg-gray-700 text-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                
                 <button class="relative">
                     <svg class="h-6 w-6 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor"
                          viewBox="0 0 24 24">
@@ -204,7 +203,7 @@ try {
         <div class="p-6 overflow-y-auto">
 
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-semibold">Attendance</h1>
+                <h1 class="text-2xl font-semibold text-white">Attendance</h1>
                 <button onclick="openModal('createModal')"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
                     + Add Attendance
@@ -262,12 +261,12 @@ try {
 
 <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4">Add Attendance Record</h2>
+        <h2 class="text-xl font-semibold mb-4 text-white">Add Attendance Record</h2>
         <form method="POST" class="space-y-4">
             <input type="hidden" name="action" value="create">
             <div>
-                <label class="block mb-1">User ID</label>
-                <select name="user_id" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">User ID</label>
+                <select name="user_id" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                     <optgroup label="Members">
                         <?php foreach ($members as $member): ?>
                             <option value="<?= $member['id'] ?>">
@@ -285,27 +284,27 @@ try {
                 </select>
             </div>
             <div>
-                <label class="block mb-1">Role</label>
-                <select name="role" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Role</label>
+                <select name="role" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                     <option value="member">Member</option>
                     <option value="trainer">Trainer</option>
                 </select>
             </div>
             <div>
-                <label class="block mb-1">Date</label>
-                <input name="date" type="date" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Date</label>
+                <input name="date" type="date" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div>
-                <label class="block mb-1">Time In</label>
-                <input name="time_in" type="time" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Time In</label>
+                <input name="time_in" type="time" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div>
-                <label class="block mb-1">Time Out</label>
-                <input name="time_out" type="time" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Time Out</label>
+                <input name="time_out" type="time" class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('createModal')"
-                        class="px-4 py-2 bg-gray-600 rounded-lg text-gray-200">Cancel</button>
+                        class="px-4 py-2 bg-gray-600 rounded-lg text-white">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white">Save</button>
             </div>
         </form>
@@ -314,13 +313,13 @@ try {
 
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg">
-        <h2 class="text-xl font-semibold mb-4">Edit Attendance Record</h2>
+        <h2 class="text-xl font-semibold mb-4 text-white">Edit Attendance Record</h2>
         <form method="POST" id="editForm" class="space-y-4">
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="id" id="edit_id">
             <div>
-                <label class="block mb-1">User ID</label>
-                <select name="user_id" id="edit_user_id" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">User ID</label>
+                <select name="user_id" id="edit_user_id" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                     <optgroup label="Members">
                         <?php foreach ($members as $member): ?>
                             <option value="<?= $member['id'] ?>">
@@ -338,30 +337,30 @@ try {
                 </select>
             </div>
             <div>
-                <label class="block mb-1">Role</label>
-                <select name="role" id="edit_role" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                <label class="block mb-1 text-white">Role</label>
+                <select name="role" id="edit_role" required class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
                     <option value="member">Member</option>
                     <option value="trainer">Trainer</option>
                 </select>
             </div>
             <div>
-                <label class="block mb-1">Date</label>
+                <label class="block mb-1 text-white">Date</label>
                 <input name="date" id="edit_date" type="date" required
-                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div>
-                <label class="block mb-1">Time In</label>
+                <label class="block mb-1 text-white">Time In</label>
                 <input name="time_in" id="edit_time_in" type="time" required
-                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div>
-                <label class="block mb-1">Time Out</label>
+                <label class="block mb-1 text-white">Time Out</label>
                 <input name="time_out" id="edit_time_out" type="time"
-                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-gray-200">
+                       class="w-full px-3 py-2 bg-gray-700 rounded-lg text-white">
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" onclick="closeModal('editModal')"
-                        class="px-4 py-2 bg-gray-600 rounded-lg text-gray-200">Cancel</button>
+                        class="px-4 py-2 bg-gray-600 rounded-lg text-white">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 rounded-lg text-white">Update</button>
             </div>
         </form>

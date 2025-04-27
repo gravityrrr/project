@@ -151,10 +151,9 @@ $counts = array_column($specs, 'cnt');
 
     <!-- HEADER -->
     <header class="bg-gray-800 px-6 py-4 flex items-center justify-between">
-      <h1 class="text-2xl font-semibold">Dashboard</h1>
+      <h1 class="text-2xl font-semibold text-white">Dashboard</h1>
       <div class="flex items-center gap-4">
-        <input type="search" placeholder="Search..."
-               class="px-4 py-1 bg-gray-700 text-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        
         <button class="relative">
           <svg class="h-6 w-6 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/>
