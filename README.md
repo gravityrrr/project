@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.icons8.com/ios-filled/100/ffffff/dumbbell.png" alt="FitFusion Logo" width="100"/>
+  <img src="https://raw.githubusercontent.com/gravityrrr/project/refs/heads/main/assets/images/logo.jpg" alt="FitFusion Logo" width="100"/>
 </p>
 <h1 align="center" style="color:#4F46E5;">🚀 FitFusion Gym Management System</h1>
 <p align="center">
@@ -167,11 +167,11 @@ CREATE TABLE equipment (
 
 ---
 
-## 🙌 Contributing & License
+## 🙌 Contributing 
 
-- Fork, Branch, PR, 🚀  
-- MIT License  
-
+- Rushil Reddy 1RUA24CSE0380
+- Rudhayesh    1RUA24CSE0379
+- Sai Daksh    1RUA24CSE
 ---
 
 <p align="center">Built with 💜 by the FitFusion Team</p>
