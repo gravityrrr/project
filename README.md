@@ -171,7 +171,7 @@ CREATE TABLE equipment (
 
 - Rushil Reddy 1RUA24CSE0380
 - Rudhayesh    1RUA24CSE0379
-- Sai Daksh    1RUA24CSE
+- Sai Daksh    1RUA24CSE0393
 ---
 
 <p align="center">Built with 💜 by the FitFusion Team</p>
